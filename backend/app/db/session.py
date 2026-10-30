@@ -14,9 +14,15 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
 if not DATABASE_URL:
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-    db_path = DATA_DIR / "priya.db"
+    try:
+        DATA_DIR.mkdir(parents=True, exist_ok=True)
+        db_path = DATA_DIR / "priya.db"
+    except OSError:
+        db_path = Path("/tmp") / "priya.db"
     DATABASE_URL = f"sqlite:///{db_path}"
 
 connect_args = {}
