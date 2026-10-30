@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Priya Shopping Assistant — Family Oversight & Governance Dashboard">
+  <title>Priya Shopping Assistant — Family Dashboard</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <style>
+    .dashboard-container { max-width: 1200px; margin: 1.5rem auto; padding: 0 1.25rem; display: flex; flex-direction: column; gap: 1.5rem; }
+    .card { background: #ffffff; border: 2px solid var(--color-border); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-sm); }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem; }
+    .auth-bar { display: flex; align-items: center; gap: 1rem; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 800px) { .grid-2 { grid-template-columns: 1fr; } }
+    .badge-status { padding: 0.25rem 0.65rem; border-radius: var(--radius-sm); font-weight: 700; font-size: var(--font-size-sm); }
+    .status-awaiting_family_approval { background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; }
+    .status-approved_for_execution { background: #dcfce7; color: #166534; border: 1px solid #22c55e; }
+    .status-confirmed_demo { background: #e0f2fe; color: #075985; border: 1px solid #38bdf8; }
+    .status-cancelled { background: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }
+    .table-responsive { overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: var(--font-size-sm); }
+    .data-table th, .data-table td { padding: 0.75rem 0.5rem; border-bottom: 1px solid #e2e8f0; text-align: left; }
+    .data-table th { background: #f8fafc; font-weight: 700; }
+    .actions-cell { display: flex; gap: 0.5rem; }
+  </style>
+</head>
+<body>
+  <header class="app-header" role="banner">
+    <div class="header-container">
+      <div class="brand">
+        <span class="brand-avatar" aria-hidden="true">🛡️👨‍👩‍👧</span>
+        <div>
+          <h1>Family Oversight & Approval Dashboard</h1>
+          <p class="subtitle">Guardianship, Spending Limits & Order Approvals</p>
+        </div>
+      </div>
+      <div class="header-controls">
+        <div id="auth-header-logged-in" class="auth-bar hidden">
+          <span id="user-display-name" style="font-weight: 600;"></span>
+          <button type="button" id="btn-logout" class="btn btn-secondary" style="min-height: 38px; padding: 0.4rem 0.8rem;">Sign Out</button>
+        </div>
+        <a href="/" class="btn btn-outline" style="min-height: 38px; padding: 0.4rem 0.8rem; color: #ffffff; border-color: #64748b;">Elder Shopping Page →</a>
+      </div>
+    </div>
+  </header>
+
+  <aside class="demo-warning-banner" role="alert">
+    <div class="warning-icon" aria-hidden="true">🔒</div>
+    <div class="warning-text">
+      <strong>Secure Family Session:</strong> Real backend policy checks, spending limit enforcement, and order audit trail.
+    </div>
+  </aside>
+
+  <main class="dashboard-container" id="main-dashboard">
+    <div id="status-message" class="status-message hidden" role="status"></div>
+
+    <!-- Login Section -->
+    <section id="login-section" class="card" aria-labelledby="login-heading">
+      <h2 id="login-heading">Family Sign In / परिवार लॉगिन</h2>
+      <p style="margin-bottom: 1rem; color: var(--color-text-muted);">
+        Sign in to view elder profiles, update monthly spending allowances, and approve high-value orders.
+      </p>
+      <form id="login-form" style="max-width: 400px; display: flex; flex-direction: column; gap: 1rem;" onsubmit="return false;">
+        <div class="input-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" value="priya_sharma" required />
+        </div>
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" value="DemoFamily2026!" required />
+        </div>
+        <button type="submit" id="btn-login" class="btn btn-primary">Sign In</button>
+        <p style="font-size: 0.85rem; color: #64748b;">
+          * Demo credentials pre-filled: <code>priya_sharma</code> / <code>DemoFamily2026!</code>
+        </p>
+      </form>
+    </section>
+
+    <!-- Authenticated Dashboard View -->
+    <div id="dashboard-content" class="hidden" style="display: flex; flex-direction: column; gap: 1.5rem;">
+      <div class="grid-2">
+        <!-- Elder Profile & Policy Card -->
+        <section class="card" aria-labelledby="profile-heading">
+          <div class="card-header">
+            <h2 id="profile-heading">Elder Profile & Policy</h2>
+            <span class="badge-status status-approved_for_execution">Active</span>
+          </div>
+          <div id="profile-details" style="display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.25rem;">
+            <p><strong>Name:</strong> <span id="elder-name">Loading...</span></p>
+            <p><strong>Phone:</strong> <span id="elder-phone"></span></p>
+            <p><strong>Language:</strong> <span id="elder-lang"></span></p>
+            <p><strong>Delivery Address:</strong> <span id="elder-address"></span></p>
+            <p><strong>Current Spending Limit:</strong> <strong id="elder-limit" style="color: var(--color-primary);"></strong></p>
+            <p><strong>Family Approval:</strong> <span id="elder-approval-rule"></span></p>
+          </div>
+
+          <!-- Update Policy Form -->
+          <form id="policy-form" style="background: #f8fafc; padding: 1rem; border-radius: var(--radius-md); border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 0.75rem;" onsubmit="return false;">
+            <h3 style="font-size: var(--font-size-base);">Update Spending & Approval Rules</h3>
+            <div class="input-group">
+              <label for="new-limit">Spending Limit (₹ INR)</label>
+              <input type="number" id="new-limit" min="100" step="100" />
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <input type="checkbox" id="require-approval-chk" />
+              <label for="require-approval-chk" style="font-size: var(--font-size-sm); font-weight: 600;">Require Family Approval for all orders</label>
+            </div>
+            <button type="submit" id="btn-save-policy" class="btn btn-secondary">Save Policy Changes</button>
+          </form>
+        </section>
+
+        <!-- Approval Queue Card -->
+        <section class="card" aria-labelledby="approval-heading">
+          <div class="card-header">
+            <h2 id="approval-heading">Approval Queue / लंबित अनुमोदन</h2>
+            <span id="pending-count-badge" class="badge-count">0 pending</span>
+          </div>
+          <p id="no-pending-msg" class="empty-state" style="padding: 1.5rem;">
+            No orders currently awaiting family approval.
+          </p>
+          <div id="pending-orders-list" style="display: flex; flex-direction: column; gap: 1rem;"></div>
+        </section>
+      </div>
+
+      <!-- Order History Section -->
+      <section class="card" aria-labelledby="orders-heading">
+        <div class="card-header">
+          <h2 id="orders-heading">Order History / ऑर्डर इतिहास</h2>
+          <button type="button" id="btn-refresh-orders" class="btn btn-outline" style="min-height: 36px; padding: 0.3rem 0.6rem;">Refresh Orders</button>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table" aria-label="Order History">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Items</th>
+                <th>Total (INR)</th>
+                <th>Status</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody id="orders-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Audit Trail Section -->
+      <section class="card" aria-labelledby="audit-heading">
+        <div class="card-header">
+          <h2 id="audit-heading">Security & Policy Audit Events</h2>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table" aria-label="Audit Events">
+            <thead>
+              <tr>
+                <th>Time (UTC)</th>
+                <th>Actor</th>
+                <th>Action</th>
+                <th>Target</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody id="audit-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="/static/dashboard.js"></script>
+</body>
+</html>

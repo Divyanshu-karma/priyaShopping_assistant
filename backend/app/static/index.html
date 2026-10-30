@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Priya Shopping Assistant — Voice-first shopping demo designed for Indian seniors. Local Phase 1 MVP.">
+  <title>Priya Shopping Assistant — Local Demo</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <!-- Top Navigation & Language Toggle -->
+  <header class="app-header" role="banner">
+    <div class="header-container">
+      <div class="brand">
+        <span class="brand-avatar" aria-hidden="true">👵🏽🛒</span>
+        <div>
+          <h1 id="app-title">Priya Shopping Assistant — Local Demo</h1>
+          <p id="app-subtitle" class="subtitle">Voice & Text Shopping for Indian Seniors</p>
+        </div>
+      </div>
+      <div class="header-controls">
+        <label for="lang-select" class="sr-only">Choose Language / भाषा चुनें</label>
+        <div class="lang-toggle-wrap">
+          <span aria-hidden="true">🌐</span>
+          <select id="lang-select" aria-label="Select language: English or Hindi">
+            <option value="en" selected>English</option>
+            <option value="hi">हिंदी (Hindi)</option>
+          </select>
+        </div>
+        <a href="/dashboard" class="btn btn-outline" style="min-height: 38px; padding: 0.35rem 0.75rem; color: #ffffff; border-color: #64748b; font-size: 0.9rem; text-decoration: none;">🛡️ Family Dashboard</a>
+      </div>
+    </div>
+
+  </header>
+
+  <!-- Prominent Demo Warning Banner -->
+  <aside class="demo-warning-banner" role="alert" aria-live="polite">
+    <div class="warning-icon" aria-hidden="true">⚠️</div>
+    <div class="warning-text">
+      <strong id="warning-title">Demo only</strong>:
+      <span id="warning-desc">Products, prices, availability, and orders are sample data. No real order or payment will be made.</span>
+    </div>
+  </aside>
+
+  <main class="main-container" id="main-content" role="main">
+    <!-- Search Section -->
+    <section class="search-card" aria-labelledby="search-heading">
+      <h2 id="search-heading">1. Search Products / उत्पाद खोजें</h2>
+      
+      <form id="search-form" class="search-form" onsubmit="return false;">
+        <div class="search-row">
+          <div class="input-group search-input-group">
+            <label for="search-input" id="lbl-search-input">What would you like to buy today?</label>
+            <div class="input-with-button">
+              <input 
+                type="text" 
+                id="search-input" 
+                placeholder="e.g. reading glasses, senior phone, shoes, BP monitor" 
+                maxlength="100" 
+                autocomplete="off"
+                required
+              />
+              <button type="submit" id="btn-search" class="btn btn-primary">
+                <span class="btn-icon" aria-hidden="true">🔍</span>
+                <span id="btn-search-text">Search</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Optional Filters -->
+        <div class="filters-row">
+          <div class="input-group">
+            <label for="filter-category" id="lbl-category">Category (Optional)</label>
+            <select id="filter-category">
+              <option value="">All Categories</option>
+              <option value="Vision Care">Vision Care / चश्मा</option>
+              <option value="Electronics">Electronics / फोन व इलेक्ट्रॉनिक</option>
+              <option value="Footwear">Footwear / जूते</option>
+              <option value="Health Devices">Health Devices / स्वास्थ्य उपकरण</option>
+              <option value="Mobility">Mobility / छड़ी व सहारा</option>
+              <option value="Groceries & Wellness">Groceries & Wellness / घरेलू व स्वास्थ्य</option>
+              <option value="Clothing">Clothing / वस्त्र</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label for="filter-max-price" id="lbl-max-price">Max Price (₹ INR, Optional)</label>
+            <input 
+              type="number" 
+              id="filter-max-price" 
+              placeholder="e.g. 1000" 
+              min="0" 
+              step="50" 
+            />
+          </div>
+
+          <div class="filter-actions">
+            <button type="button" id="btn-clear-filters" class="btn btn-secondary">
+              <span id="btn-clear-text">Reset Filters</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Example Prompts -->
+        <div class="quick-examples" aria-label="Example search queries">
+          <span class="examples-label" id="lbl-examples">Try asking:</span>
+          <div class="chips-container" id="chips-container">
+            <button type="button" class="chip" data-query="reading glasses" data-max="500">👓 Reading glasses under ₹500</button>
+            <button type="button" class="chip" data-query="senior phone">📱 Senior mobile phone</button>
+            <button type="button" class="chip" data-query="walking stick">🦯 Walking stick with light</button>
+            <button type="button" class="chip" data-query="BP monitor">❤️ BP monitor with voice</button>
+            <button type="button" class="chip" data-query="slip on shoes">👟 Orthopedic slip-ons</button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Notification / Alert Bar -->
+    <div id="status-message" class="status-message hidden" role="status" aria-live="assertive"></div>
+
+    <!-- Two-column Layout: Product Results and Order Preview -->
+    <div class="content-grid">
+      <!-- Left Column: Search Results -->
+      <section class="results-section" aria-labelledby="results-heading">
+        <div class="section-header">
+          <h2 id="results-heading">Search Results / खोज परिणाम</h2>
+          <span id="results-count" class="badge-count" aria-live="polite">0 found</span>
+        </div>
+
+        <div id="results-loading" class="loading-state hidden" aria-live="polite">
+          <div class="spinner" aria-hidden="true"></div>
+          <p id="lbl-loading">Searching mock catalogue...</p>
+        </div>
+
+        <div id="results-empty" class="empty-state">
+          <div class="empty-icon" aria-hidden="true">🔍</div>
+          <p id="lbl-empty-prompt">Enter a search query or click one of the suggestions above to view products.</p>
+        </div>
+
+        <div id="results-container" class="results-list" role="region" aria-live="polite"></div>
+      </section>
+
+      <!-- Right Column: Cart & Order Preview -->
+      <section class="preview-section" aria-labelledby="preview-heading">
+        <div class="section-header">
+          <h2 id="preview-heading">2. Order Preview / ऑर्डर पूर्वावलोकन</h2>
+          <span id="cart-item-count" class="badge-count">0 items</span>
+        </div>
+
+        <div id="cart-empty-message" class="empty-state">
+          <div class="empty-icon" aria-hidden="true">🛒</div>
+          <p id="lbl-cart-empty">No items added to preview yet. Choose products from the results list on the left.</p>
+        </div>
+
+        <!-- Selected Items Table/List -->
+        <div id="cart-items-card" class="cart-items-card hidden">
+          <table class="cart-table" id="cart-table" aria-label="Selected products for preview">
+            <thead>
+              <tr>
+                <th scope="col" id="col-item">Item</th>
+                <th scope="col" id="col-qty">Qty</th>
+                <th scope="col" id="col-price">Price</th>
+                <th scope="col" id="col-total">Total</th>
+                <th scope="col" id="col-action">Action</th>
+              </tr>
+            </thead>
+            <tbody id="cart-table-body"></tbody>
+          </table>
+
+          <div class="cart-summary">
+            <div class="summary-line">
+              <span id="lbl-subtotal">Subtotal (INR):</span>
+              <strong id="summary-subtotal">₹0.00</strong>
+            </div>
+            <div class="summary-line highlight">
+              <span id="lbl-grandtotal">Grand Total (INR):</span>
+              <strong id="summary-total">₹0.00</strong>
+            </div>
+            <p class="summary-note" id="lbl-summary-note">
+              * Fictional demo total calculated authoritatively by the backend.
+            </p>
+          </div>
+
+          <!-- Actions -->
+          <div class="cart-actions">
+            <button type="button" id="btn-request-preview" class="btn btn-secondary">
+              <span class="btn-icon" aria-hidden="true">📋</span>
+              <span id="btn-review-text">Review / Refresh Preview</span>
+            </button>
+            <button type="button" id="btn-clear-cart" class="btn btn-outline">
+              <span class="btn-icon" aria-hidden="true">🗑️</span>
+              <span id="btn-clear-cart-text">Clear All</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Active Server-Generated Preview Box -->
+        <div id="server-preview-box" class="preview-box hidden" aria-live="polite">
+          <div class="preview-box-header">
+            <span class="badge badge-pending" id="badge-status">AWAITING CONFIRMATION</span>
+            <span class="preview-id-tag">ID: <code id="display-preview-id"></code></span>
+          </div>
+
+          <p class="preview-instruction" id="lbl-preview-instruction">
+            Please verify your demo order items and total above. When ready, click the button below to confirm.
+          </p>
+
+          <div class="explicit-confirm-container">
+            <button type="button" id="btn-confirm-order" class="btn btn-success btn-large">
+              <span class="btn-icon" aria-hidden="true">✅</span>
+              <span id="btn-confirm-text">Confirm Demo Order</span>
+            </button>
+            <p class="confirm-subtext" id="lbl-confirm-subtext">
+              Confirmation requires this explicit click. No charge or real transaction will take place.
+            </p>
+          </div>
+        </div>
+
+        <!-- Confirmed Order Success Card -->
+        <div id="confirmed-card" class="confirmed-card hidden" aria-live="polite">
+          <div class="success-icon" aria-hidden="true">🎉</div>
+          <h3 id="lbl-order-success">Demo Order Placed Successfully!</h3>
+          <p id="lbl-order-ref-text">Demo Reference ID:</p>
+          <div class="order-ref-pill"><code id="display-order-id"></code></div>
+          <div class="confirmed-details">
+            <p><strong id="lbl-status-label">Status:</strong> <span class="badge badge-success">confirmed_demo</span></p>
+            <p><strong id="lbl-confirmed-time">Timestamp:</strong> <span id="display-order-time"></span></p>
+            <p><strong id="lbl-final-amount">Total Demo Amount:</strong> <span id="display-order-total"></span></p>
+          </div>
+          <div class="disclaimer-alert">
+            <strong id="lbl-notice">Important Notice:</strong>
+            <span id="lbl-notice-body">This order is stored in-memory for testing only and will be reset when the local server restarts. No real store was contacted.</span>
+          </div>
+          <button type="button" id="btn-new-order" class="btn btn-primary">
+            <span id="btn-new-order-text">Start Another Search</span>
+          </button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="app-footer" role="contentinfo">
+    <div class="footer-container">
+      <p id="footer-phase">Priya Shopping Assistant — Phase 1 Local Vertical Slice</p>
+      <p class="footer-subtext" id="footer-sub">Bound strictly to 127.0.0.1 • Fast, Accessible, Senior-Friendly Design</p>
+      <p><a href="/docs" target="_blank" rel="noopener noreferrer" id="footer-api-link">View Local FastAPI Documentation (/docs)</a></p>
+    </div>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

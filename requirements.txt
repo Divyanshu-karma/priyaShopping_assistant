@@ -1,0 +1,9 @@
+# Documentation of direct Python dependencies for Phase 1
+# DO NOT RUN 'pip install -r requirements.txt' in the existing conda environment.
+# These dependencies are already satisfied in the pre-existing 'tm_project_v2' environment.
+
+fastapi>=0.110.0
+uvicorn>=0.28.0
+pydantic>=2.6.0
+pytest>=8.0.0
+httpx>=0.27.0
