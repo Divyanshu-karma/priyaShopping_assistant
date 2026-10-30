@@ -155,6 +155,36 @@ def test_family_dashboard_login_success():
     assert data["role"] == "guardian"
 
 
+def test_family_session_cookie_development_mode(monkeypatch):
+    """Verify session cookie in development mode has Secure disabled while preserving HttpOnly and SameSite=Lax."""
+    monkeypatch.setenv("ENVIRONMENT", "development")
+    res = client.post(
+        "/api/v1/family/auth/login",
+        json={"username": "priya_sharma", "password": "DemoFamily2026!"},
+    )
+    assert res.status_code == 200
+    set_cookie = res.headers.get("set-cookie", "")
+    assert "priya_family_session=" in set_cookie
+    assert "httponly" in set_cookie.lower()
+    assert "samesite=lax" in set_cookie.lower()
+    assert "secure" not in set_cookie.lower()
+
+
+def test_family_session_cookie_production_mode(monkeypatch):
+    """Verify session cookie in production mode has Secure enabled while preserving HttpOnly and SameSite=Lax."""
+    monkeypatch.setenv("ENVIRONMENT", "production")
+    res = client.post(
+        "/api/v1/family/auth/login",
+        json={"username": "priya_sharma", "password": "DemoFamily2026!"},
+    )
+    assert res.status_code == 200
+    set_cookie = res.headers.get("set-cookie", "")
+    assert "priya_family_session=" in set_cookie
+    assert "httponly" in set_cookie.lower()
+    assert "samesite=lax" in set_cookie.lower()
+    assert "secure" in set_cookie.lower()
+
+
 def test_family_dashboard_policy_update_and_audit():
     """Verify family member can update spending limit and check audit event."""
     # Login

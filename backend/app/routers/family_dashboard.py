@@ -2,6 +2,7 @@
 
 from datetime import datetime, timezone
 import json
+import os
 from typing import Dict, List, Optional
 from fastapi import APIRouter, Cookie, Depends, Header, HTTPException, Response, status
 from pydantic import BaseModel, Field
@@ -130,13 +131,15 @@ def login(body: LoginRequest, response: Response, db: Session = Depends(get_db))
     token = generate_session_token()
     ACTIVE_SESSIONS[token] = member.id
 
+    is_production = os.environ.get("ENVIRONMENT", "development").lower() == "production"
+
     # Set secure HttpOnly cookie
     response.set_cookie(
         key="priya_family_session",
         value=token,
         httponly=True,
         samesite="lax",
-        secure=False,  # Can be true in production with HTTPS
+        secure=is_production,
     )
 
     return LoginResponse(

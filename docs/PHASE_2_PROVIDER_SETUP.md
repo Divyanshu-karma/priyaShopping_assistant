@@ -60,15 +60,19 @@ In the **Bolna Agent Dashboard > Tools / Function Calling**:
    - URL: `https://<YOUR_DOMAIN>/api/v1/voice/tools/search_products`
    - Method: `POST`
    - Headers: `Authorization: Bearer <YOUR_PRIYA_TOOL_TOKEN>`
-2. Add custom API tool `create_order_preview`:
+2. Add custom API tool `get_product_details`:
+   - URL: `https://<YOUR_DOMAIN>/api/v1/voice/tools/get_product_details`
+   - Method: `POST`
+   - Headers: `Authorization: Bearer <YOUR_PRIYA_TOOL_TOKEN>`
+3. Add custom API tool `create_order_preview`:
    - URL: `https://<YOUR_DOMAIN>/api/v1/voice/tools/create_order_preview`
    - Method: `POST`
    - Headers: `Authorization: Bearer <YOUR_PRIYA_TOOL_TOKEN>`
-3. Add custom API tool `request_order_confirmation`:
+4. Add custom API tool `request_order_confirmation`:
    - URL: `https://<YOUR_DOMAIN>/api/v1/voice/tools/request_order_confirmation`
    - Method: `POST`
    - Headers: `Authorization: Bearer <YOUR_PRIYA_TOOL_TOKEN>`
-4. Add custom API tool `get_order_status`:
+5. Add custom API tool `get_order_status`:
    - URL: `https://<YOUR_DOMAIN>/api/v1/voice/tools/get_order_status`
    - Method: `POST`
    - Headers: `Authorization: Bearer <YOUR_PRIYA_TOOL_TOKEN>`
