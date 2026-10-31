@@ -1,2 +1,18 @@
+[project]
+name = "priya-shopping-assistant"
+version = "0.1.0"
+description = "Priya Shopping Assistant — Voice-first shopping for Indian seniors"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn>=0.28.0",
+    "pydantic>=2.6.0",
+    "sqlalchemy>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "psycopg2-binary>=2.9.0",
+    "httpx>=0.27.0",
+]
+
 [tool.vercel]
 entrypoint = "backend.app.main:app"

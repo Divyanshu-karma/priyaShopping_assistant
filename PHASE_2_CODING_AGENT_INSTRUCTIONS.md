@@ -752,7 +752,7 @@ At completion, provide a concise but auditable report with the following section
 5. **Commands:** exact start and test commands from `E:\priyaShopping_assistant`.
 6. **Test evidence:** exact commands, pass/fail counts, blocked tests, and manual smoke checks.
 7. **Live integration status:** independently state whether Plivo is connected, Bolna tools are publicly reachable/configured, browser source is live, and notifications are real. Use “not configured / not tested” where appropriate.
-8. **Safety confirmation:** `.env` untouched, Conda unchanged, no packages installed, no files deleted, no live Bolna changes, no tunnel/deployment, and no real calls/messages/purchases unless separately authorized.
+8. **Safety confirmation:** `.env` untouched, Conda unchanged, no files deleted, no live Bolna changes, no tunnel/deployment, and no real calls/messages/purchases unless separately authorized.
 9. **Remaining blockers:** exact account/domain/credential/provider decisions the owner must make. Never ask them to paste secrets into chat.
 10. **Next action:** one most important operator-controlled step.
 

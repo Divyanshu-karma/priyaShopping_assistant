@@ -3,6 +3,7 @@
 Welcome to **Priya Shopping Assistant**, an accessible, voice-first shopping assistant designed to help Indian senior citizens browse, select, and order everyday items using natural Hindi, English, and Hinglish.
 
 Phase 2 advances the project to a **persistent, secure, integration-ready vertical slice** featuring:
+
 - **Persistent Database:** SQLite locally with zero configuration (`data/priya.db`) and PostgreSQL readiness via `DATABASE_URL`.
 - **Policy & Governance:** Backend spending limit enforcement, immutable quote snapshots, and multi-tier family approval workflows.
 - **Voice Tools API:** Dedicated token-authenticated Bolna endpoints (`/api/v1/voice/tools/...`).
@@ -72,20 +73,22 @@ E:\priyaShopping_assistant\
 ## Local Setup & Quick Start
 
 ### 1. Activate Existing Conda Environment
+
 ```powershell
 Set-Location 'E:\priyaShopping_assistant'
 conda activate tm_project_v2
 ```
 
 ### 2. Start the Local Server
+
 ```powershell
 python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
 ```
 
 ### 3. Access Web Interfaces
+
 - **Elder Shopping Page:** 👉 [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
-- **Family Oversight Dashboard:** 👉 [http://127.0.0.1:8000/dashboard](http://127.0.0.1:8000/dashboard)  
-  *(Pre-seeded login: `priya_sharma` / `DemoFamily2026!`)*
+- **Family Oversight Dashboard:** 👉 [http://127.0.0.1:8000/dashboard](http://127.0.0.1:8000/dashboard)*(Pre-seeded login: `priya_sharma` / `DemoFamily2026!`)*
 - **OpenAPI Documentation:** 👉 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
 ---
@@ -99,6 +102,7 @@ python -m pytest backend/tests -v
 ```
 
 All 29 tests pass with 100% success rate:
+
 - 16 Phase 1 regression tests (health, search, demo preview, confirmation).
 - 13 Phase 2 tests (persistence, governance, spending limits, approvals, voice tool auth, BOLA protection, SSRF blocking, prompt injection sanitization).
 
@@ -106,20 +110,20 @@ All 29 tests pass with 100% success rate:
 
 ## Key API Endpoints
 
-| Category | Method | Endpoint | Description |
-|---|---|---|---|
-| **System** | `GET` | `/api/v1/health` | Health, database mode, and subsystem status |
-| **Elder Shopping** | `POST` | `/api/v1/products/search` | Search mock products |
-| **Elder Shopping** | `POST` | `/api/v1/orders/preview` | Generate order preview |
-| **Elder Shopping** | `POST` | `/api/v1/orders/confirm` | Explicit demo confirmation |
-| **Voice Tools** | `POST` | `/api/v1/voice/tools/search_products` | Authenticated voice search |
-| **Voice Tools** | `POST` | `/api/v1/voice/tools/create_order_preview` | Create persistent preview |
-| **Voice Tools** | `POST` | `/api/v1/voice/tools/request_order_confirmation` | Explicit confirmation & policy evaluation |
-| **Voice Tools** | `POST` | `/api/v1/voice/tools/get_order_status` | Order lifecycle status check |
-| **Family Dashboard**| `POST` | `/api/v1/family/auth/login` | Session authentication |
-| **Family Dashboard**| `GET` | `/api/v1/family/profiles` | Authorized elder profiles |
-| **Family Dashboard**| `PATCH`| `/api/v1/family/profiles/{id}/policy` | Update limits & approval rules |
-| **Family Dashboard**| `GET` | `/api/v1/family/orders` | Orders awaiting approval or placed |
-| **Family Dashboard**| `POST` | `/api/v1/family/orders/{id}/approve` | Approve order in queue |
-| **Family Dashboard**| `POST` | `/api/v1/family/orders/{id}/reject` | Reject order in queue |
-| **Family Dashboard**| `GET` | `/api/v1/family/audit-events` | Security audit trail |
+| Category                   | Method    | Endpoint                                           | Description                                 |
+| -------------------------- | --------- | -------------------------------------------------- | ------------------------------------------- |
+| **System**           | `GET`   | `/api/v1/health`                                 | Health, database mode, and subsystem status |
+| **Elder Shopping**   | `POST`  | `/api/v1/products/search`                        | Search mock products                        |
+| **Elder Shopping**   | `POST`  | `/api/v1/orders/preview`                         | Generate order preview                      |
+| **Elder Shopping**   | `POST`  | `/api/v1/orders/confirm`                         | Explicit demo confirmation                  |
+| **Voice Tools**      | `POST`  | `/api/v1/voice/tools/search_products`            | Authenticated voice search                  |
+| **Voice Tools**      | `POST`  | `/api/v1/voice/tools/create_order_preview`       | Create persistent preview                   |
+| **Voice Tools**      | `POST`  | `/api/v1/voice/tools/request_order_confirmation` | Explicit confirmation & policy evaluation   |
+| **Voice Tools**      | `POST`  | `/api/v1/voice/tools/get_order_status`           | Order lifecycle status check                |
+| **Family Dashboard** | `POST`  | `/api/v1/family/auth/login`                      | Session authentication                      |
+| **Family Dashboard** | `GET`   | `/api/v1/family/profiles`                        | Authorized elder profiles                   |
+| **Family Dashboard** | `PATCH` | `/api/v1/family/profiles/{id}/policy`            | Update limits & approval rules              |
+| **Family Dashboard** | `GET`   | `/api/v1/family/orders`                          | Orders awaiting approval or placed          |
+| **Family Dashboard** | `POST`  | `/api/v1/family/orders/{id}/approve`             | Approve order in queue                      |
+| **Family Dashboard** | `POST`  | `/api/v1/family/orders/{id}/reject`              | Reject order in queue                       |
+| **Family Dashboard** | `GET`   | `/api/v1/family/audit-events`                    | Security audit trail                        |
