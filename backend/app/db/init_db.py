@@ -1,13 +1,35 @@
 """Database schema creation and initial seeding."""
 
+from sqlalchemy import inspect, text
 from backend.app.db.session import engine, Base, SessionLocal
 from backend.app.db.models import ElderProfile, FamilyMember
 from backend.app.core.security import hash_password
 
 
-def init_db() -> None:
-    """Create all tables and seed default fixtures if not present."""
-    Base.metadata.create_all(bind=engine)
+def init_db(force: bool = False) -> None:
+    """Create all tables and seed default fixtures if not present.
+    
+    Safe for both local SQLite development and concurrent serverless PostgreSQL (Vercel).
+    """
+    if engine.dialect.name == "sqlite":
+        Base.metadata.create_all(bind=engine)
+    else:
+        # For PostgreSQL / Neon, avoid concurrent DDL race conditions on pg_type
+        inspector = inspect(engine)
+        if force or not inspector.has_table("elder_profiles"):
+            try:
+                with engine.connect() as conn:
+                    # Postgres advisory lock ensures only one worker executes DDL at a time
+                    conn.execute(text("SELECT pg_advisory_lock(84920412)"))
+                    try:
+                        Base.metadata.create_all(bind=conn)
+                        conn.commit()
+                    finally:
+                        conn.execute(text("SELECT pg_advisory_unlock(84920412)"))
+                        conn.commit()
+            except Exception:
+                # If another concurrent worker created tables, continue safely
+                pass
 
     db = SessionLocal()
     try:
@@ -26,7 +48,10 @@ def init_db() -> None:
                 is_active=True,
             )
             db.add(elder)
-            db.commit()
+            try:
+                db.commit()
+            except Exception:
+                db.rollback()
 
         # Check if default family member exists
         family = db.query(FamilyMember).filter(FamilyMember.username == "priya_sharma").first()
@@ -44,11 +69,15 @@ def init_db() -> None:
                 is_active=True,
             )
             db.add(family)
-            db.commit()
+            try:
+                db.commit()
+            except Exception:
+                db.rollback()
     finally:
         db.close()
 
 
 if __name__ == "__main__":
-    init_db()
+    init_db(force=True)
     print("Database initialized successfully.")
+

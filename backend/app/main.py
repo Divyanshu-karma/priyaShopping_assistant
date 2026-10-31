@@ -33,7 +33,7 @@ from backend.app.services.orders import (
 
 from backend.app.db.init_db import init_db
 from contextlib import asynccontextmanager
-from backend.app.db.session import get_database_mode
+from backend.app.db.session import engine, get_database_mode
 from backend.app.routers import voice_tools, family_dashboard
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -42,8 +42,19 @@ STATIC_DIR = BASE_DIR / "static"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Ensure database tables and initial fixtures are initialized on startup."""
-    init_db()
+    """Ensure database tables and initial fixtures are initialized safely on startup."""
+    if engine.dialect.name == "sqlite":
+        init_db()
+    else:
+        # In serverless/PostgreSQL (Vercel), tables are pre-provisioned.
+        # Avoid running DDL on every cold start to prevent pg_type unique violation races.
+        from sqlalchemy import inspect
+        try:
+            inspector = inspect(engine)
+            if not inspector.has_table("elder_profiles"):
+                init_db()
+        except Exception:
+            pass
     yield
 
 
